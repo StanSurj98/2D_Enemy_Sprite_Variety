@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Holds ALL enemies for instance of a game
       this.enemies = [];
       this.#addNewEnemy();
-      console.log("enemies: ", this.enemies);
+      console.log("2nd, Look through Enemies Array: ", this.enemies);
     }
 
     // These update/draws handles background, enemies, resources etc.
@@ -43,9 +43,10 @@ document.addEventListener("DOMContentLoaded", function () {
     constructor(game) {
       // Able to use all Game class properties
       this.game = game;
-      // Temp hardcode
-      this.x = 100;
-      this.y = 100;
+      console.log("Define Game instance 1st: ", this.game);
+      // Initial starting spawns for enemies correspond to Game instance
+      this.x = this.game.width; 
+      this.y = Math.random() * this.game.height;
       this.width = 100;
       this.height = 100;
     }
