@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // ---- Image resources
   const worm = new Image();
   worm.src = "./images/enemy_worm.png";
+  const ghost = new Image();
+  ghost.src = "./images/enemy_ghost.png";
 
   // ---- Main Game Logic
   class Game {
@@ -20,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // Want to spawn > 1 enemy, at this interval, spawn new
       this.enemyInterval = 500;
       this.enemyTimer = 0;
+      // Multiple enemies
+      this.enemyTypes = ["worm", "ghost"];
     }
 
     // These update/draws handles background, enemies, resources etc.
@@ -46,14 +50,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Private class method in JS | ONLY call-able inside Game class | call on Instantiation
     #addNewEnemy() {
-      // Passing (this) allows Worm class access to all properties of Game class through its parent Enemy class
-      // Worm < Enemy < Game
-      this.enemies.push(new Worm(this));
+      const randomEnemy =
+        // Randomize index position 
+        this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)];
+
+      if (randomEnemy === "worm") this.enemies.push(new Worm(this));
+      if (randomEnemy === "ghost") this.enemies.push(new Ghost(this));
 
       // "Layering" effect | here, enemies @ top canvas appears "behind" ones @ bottom
       this.enemies.sort((a, b) => {
         return a.y - b.y;
-      })
+      });
     }
   }
 
@@ -70,17 +77,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // These update/draws handle SPECIFIC enemy instances
     update(deltaTime) {
-      this.x-= this.velX * deltaTime; // Temp moves left by 1px
-      
+      this.x -= this.velX * deltaTime; // Temp moves left by 1px
+
       if (this.frameTimer > this.frameInterval) {
         this.frame >= 5 ? (this.frame = 0) : this.frame++;
         this.frameTimer = 0;
       } else {
         this.frameTimer += deltaTime;
       }
-
-
-      
 
       // When entire enemy width past screen, mark delete
       if (this.x < 0 - this.width) {
@@ -117,6 +121,22 @@ document.addEventListener("DOMContentLoaded", function () {
       this.y = Math.random() * this.game.height;
       this.image = worm;
       this.velX = Math.random() * 0.1 + 0.1;
+    }
+    // And remember when Game tries to find update() or draw(), it'll keep looking at parent class until it finds it
+  }
+  class Ghost extends Enemy {
+    // !NOTE! super() in constructor runs its parent Enemy class' constructor FIRST
+    constructor(game) {
+      super(game);
+      this.spriteWidth = 261;
+      this.spriteHeight = 209;
+      this.width = this.spriteWidth * 0.5;
+      this.height = this.spriteWidth * 0.5;
+      // Initial starting spawns for enemies correspond to Game instance
+      this.x = this.game.width;
+      this.y = Math.random() * this.game.height;
+      this.image = ghost;
+      this.velX = Math.random() * 0.2 + 0.1;
     }
   }
 
