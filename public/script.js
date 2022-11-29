@@ -50,13 +50,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Private class method in JS | ONLY call-able inside Game class | call on Instantiation
     #addNewEnemy() {
-      const randomEnemy =
-        // Randomize index position 
-        this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)];
-
+      // Randomize index position 
+      const randomIndex = Math.floor(Math.random() * this.enemyTypes.length);
+      // Find random enemy in array
+      const randomEnemy = this.enemyTypes[randomIndex];
+      // Generate that enemy type
       if (randomEnemy === "worm") this.enemies.push(new Worm(this));
       if (randomEnemy === "ghost") this.enemies.push(new Ghost(this));
 
+      // ---- No longer needed since some fly some don't ----
       // "Layering" effect | here, enemies @ top canvas appears "behind" ones @ bottom
       // this.enemies.sort((a, b) => {
       //   return a.y - b.y;
@@ -70,21 +72,21 @@ document.addEventListener("DOMContentLoaded", function () {
       // Able to use all Game class properties
       this.game = game;
       this.markedForDeletion = false;
-      this.frame = 0;
-      this.frameInterval = 50;
-      this.frameTimer = 0;
+      // this.frame = 0;
+      // this.frameInterval = 50;
+      // this.frameTimer = 0;
     }
 
     // These update/draws handle SPECIFIC enemy instances
     update(deltaTime) {
-      this.x -= this.velX * deltaTime; // Temp moves left by 1px
+      this.x -= this.velX * deltaTime;
 
-      if (this.frameTimer > this.frameInterval) {
-        this.frame >= 5 ? (this.frame = 0) : this.frame++;
-        this.frameTimer = 0;
-      } else {
-        this.frameTimer += deltaTime;
-      }
+      // if (this.frameTimer > this.frameInterval) {
+      //   this.frame >= 5 ? (this.frame = 0) : this.frame++;
+      //   this.frameTimer = 0;
+      // } else {
+      //   this.frameTimer += deltaTime;
+      // }
 
       // When entire enemy width past screen, mark delete
       if (this.x < 0 - this.width) {
@@ -95,7 +97,8 @@ document.addEventListener("DOMContentLoaded", function () {
     draw(ctx) {
       ctx.drawImage(
         this.image,
-        this.frame * this.spriteWidth,
+        0,
+        // this.frame * this.spriteWidth,
         0,
         this.spriteWidth,
         this.spriteHeight,
@@ -103,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
         this.y,
         this.width,
         this.height
-      ); // Temp draw entire sheet
+      );
     }
   }
 
@@ -112,8 +115,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // !NOTE! super() in constructor runs its parent Enemy class' constructor FIRST
     constructor(game) {
       super(game);
+      // Sprite FRAME dimensions
       this.spriteWidth = 229;
       this.spriteHeight = 171;
+      // On CANVAS dimensions
       this.width = this.spriteWidth * 0.5;
       this.height = this.spriteWidth * 0.5;
       // Spawn to right of canvas
@@ -140,9 +145,14 @@ document.addEventListener("DOMContentLoaded", function () {
       this.y = Math.random() * (this.game.height * 0.5);
       this.image = ghost;
       this.velX = Math.random() * 0.2 + 0.1;
+      // Flying Pattern
+      this.angle = 0;
+      this.curve = Math.random() * 3;
     }
     update(deltaTime) {
       super.update(deltaTime);
+      this.y += Math.sin(this.angle) + this.curve;
+      this.angle += 0.04;
     }
 
     draw() {
