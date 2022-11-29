@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Holds ALL enemies for instance of a game
       this.enemies = [];
       // Want to spawn > 1 enemy, at this interval, spawn new
-      this.enemyInterval = 1000;
+      this.enemyInterval = 500;
       this.enemyTimer = 0;
     }
 
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       this.enemies.forEach((enemy) => {
-        enemy.update();
+        enemy.update(deltaTime);
       });
     }
 
@@ -49,6 +49,11 @@ document.addEventListener("DOMContentLoaded", function () {
       // Passing (this) allows Worm class access to all properties of Game class through its parent Enemy class
       // Worm < Enemy < Game
       this.enemies.push(new Worm(this));
+
+      // "Layering" effect | here, enemies @ top canvas appears "behind" ones @ bottom
+      this.enemies.sort((a, b) => {
+        return a.y - b.y;
+      })
     }
   }
 
@@ -59,12 +64,23 @@ document.addEventListener("DOMContentLoaded", function () {
       this.game = game;
       this.markedForDeletion = false;
       this.frame = 0;
+      this.frameInterval = 50;
+      this.frameTimer = 0;
     }
 
     // These update/draws handle SPECIFIC enemy instances
-    update() {
-      this.x-= this.speed; // Temp moves left by 1px
-      this.frame >= 5 ? (this.frame = 0) : this.frame++;
+    update(deltaTime) {
+      this.x-= this.velX * deltaTime; // Temp moves left by 1px
+      
+      if (this.frameTimer > this.frameInterval) {
+        this.frame >= 5 ? (this.frame = 0) : this.frame++;
+        this.frameTimer = 0;
+      } else {
+        this.frameTimer += deltaTime;
+      }
+
+
+      
 
       // When entire enemy width past screen, mark delete
       if (this.x < 0 - this.width) {
@@ -100,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
       this.x = this.game.width;
       this.y = Math.random() * this.game.height;
       this.image = worm;
-      this.speed = Math.random() * 0.1 + 5;
+      this.velX = Math.random() * 0.1 + 0.1;
     }
   }
 
