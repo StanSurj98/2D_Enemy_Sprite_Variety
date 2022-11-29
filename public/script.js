@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // ---- Worm | Child of Enemy
+  // ---- Worms
   class Worm extends Enemy {
     // !NOTE! super() in constructor runs its parent Enemy class' constructor FIRST
     constructor(game) {
@@ -123,8 +123,10 @@ document.addEventListener("DOMContentLoaded", function () {
       this.image = worm;
       this.velX = Math.random() * 0.1 + 0.1;
     }
-    // And remember when Game tries to find update() or draw(), it'll keep looking at parent class until it finds it
+    // !NOTE! When Game tries to find update() or draw(), it keeps looking up parent class until it finds it
   }
+
+  // ---- Ghosts
   class Ghost extends Enemy {
     // !NOTE! super() in constructor runs its parent Enemy class' constructor FIRST
     constructor(game) {
@@ -138,6 +140,19 @@ document.addEventListener("DOMContentLoaded", function () {
       this.y = Math.random() * (this.game.height * 0.5);
       this.image = ghost;
       this.velX = Math.random() * 0.2 + 0.1;
+    }
+    update(deltaTime) {
+      super.update(deltaTime);
+    }
+
+    draw() {
+      // SAVE && RESTORE -> snapshots canvas BEFORE running below code and restores it
+      ctx.save();
+      // Meaning -> ONLY ghosts will be affected by this global setting on spawn
+      ctx.globalAlpha = 0.8; // BY ITSELF -> affects all canvas properties
+      // Want the DEFAULT draw() method from Enemy class && something unique to Ghosts!
+      super.draw(ctx) // AS IF -> Enemy.draw(ctx)
+      ctx.restore();
     }
   }
 
