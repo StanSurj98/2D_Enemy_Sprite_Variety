@@ -58,9 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
       if (randomEnemy === "ghost") this.enemies.push(new Ghost(this));
 
       // "Layering" effect | here, enemies @ top canvas appears "behind" ones @ bottom
-      this.enemies.sort((a, b) => {
-        return a.y - b.y;
-      });
+      // this.enemies.sort((a, b) => {
+      //   return a.y - b.y;
+      // });
     }
   }
 
@@ -116,9 +116,10 @@ document.addEventListener("DOMContentLoaded", function () {
       this.spriteHeight = 171;
       this.width = this.spriteWidth * 0.5;
       this.height = this.spriteWidth * 0.5;
-      // Initial starting spawns for enemies correspond to Game instance
+      // Spawn to right of canvas
       this.x = this.game.width;
-      this.y = Math.random() * this.game.height;
+      // Worms spawn only on "ground"
+      this.y = this.game.height - this.height;
       this.image = worm;
       this.velX = Math.random() * 0.1 + 0.1;
     }
@@ -132,9 +133,9 @@ document.addEventListener("DOMContentLoaded", function () {
       this.spriteHeight = 209;
       this.width = this.spriteWidth * 0.5;
       this.height = this.spriteWidth * 0.5;
-      // Initial starting spawns for enemies correspond to Game instance
       this.x = this.game.width;
-      this.y = Math.random() * this.game.height;
+      // Ghosts should only spawn in top half of canvas
+      this.y = Math.random() * (this.game.height * 0.5);
       this.image = ghost;
       this.velX = Math.random() * 0.2 + 0.1;
     }
