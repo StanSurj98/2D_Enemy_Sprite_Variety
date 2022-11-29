@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
       this.velX = Math.random() * 0.2 + 0.1;
       // Flying Pattern
       this.angle = 0;
-      this.curve = Math.random() * 3;
+      this.curve = Math.random() * 2;
     }
     update(deltaTime) {
       super.update(deltaTime);
