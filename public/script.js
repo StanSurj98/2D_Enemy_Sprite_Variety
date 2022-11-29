@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const ctx = canvas.getContext("2d");
   canvas.width = 500;
   canvas.height = 800;
+  // ---- Image resources
+  const worm = new Image();
+  worm.src = "./images/enemy_worm.png";
 
   // ---- Main Game Logic
   class Game {
@@ -26,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (this.enemyTimer > this.enemyInterval) {
         this.#addNewEnemy();
         this.enemyTimer = 0;
-        console.log("Interval Passed, Enemy Spawned: ", this.enemies);
       } else {
         this.enemyTimer += deltaTime;
       }
@@ -44,8 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Private class method in JS | ONLY call-able inside Game class | call on Instantiation
     #addNewEnemy() {
-      // Passing (this) allows Enemy class access to all properties of Game class
-      this.enemies.push(new Enemy(this));
+      // Passing (this) allows Worm class access to all properties of Game class through its parent Enemy class
+      // Worm < Enemy < Game
+      this.enemies.push(new Worm(this));
     }
   }
 
@@ -54,19 +57,15 @@ document.addEventListener("DOMContentLoaded", function () {
     constructor(game) {
       // Able to use all Game class properties
       this.game = game;
-      console.log("Define Game instance 1st: ", this.game);
-      // Initial starting spawns for enemies correspond to Game instance
-      this.x = this.game.width;
-      this.y = Math.random() * this.game.height;
-      this.width = 100;
-      this.height = 100;
       this.markedForDeletion = false;
+      this.frame = 0;
     }
 
     // These update/draws handle SPECIFIC enemy instances
     update() {
-      this.x--; // Temp moves left by 1px
-      
+      this.x-= this.speed; // Temp moves left by 1px
+      this.frame >= 5 ? (this.frame = 0) : this.frame++;
+
       // When entire enemy width past screen, mark delete
       if (this.x < 0 - this.width) {
         this.markedForDeletion = true;
@@ -74,7 +73,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     draw(ctx) {
-      ctx.fillRect(this.x, this.y, this.width, this.height); // Temp square enemy
+      ctx.drawImage(
+        this.image,
+        this.frame * this.spriteWidth,
+        0,
+        this.spriteWidth,
+        this.spriteHeight,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      ); // Temp draw entire sheet
+    }
+  }
+
+  // ---- Worm | Child of Enemy
+  class Worm extends Enemy {
+    // !NOTE! super() in constructor runs its parent Enemy class' constructor FIRST
+    constructor(game) {
+      super(game);
+      this.spriteWidth = 229;
+      this.spriteHeight = 171;
+      this.width = this.spriteWidth * 0.5;
+      this.height = this.spriteWidth * 0.5;
+      // Initial starting spawns for enemies correspond to Game instance
+      this.x = this.game.width;
+      this.y = Math.random() * this.game.height;
+      this.image = worm;
+      this.speed = Math.random() * 0.1 + 5;
     }
   }
 
