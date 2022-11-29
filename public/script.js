@@ -140,18 +140,23 @@ document.addEventListener("DOMContentLoaded", function () {
       super(game);
       this.spriteWidth = 310;
       this.spriteHeight = 175;
-      this.width = this.spriteWidth * 0.25;
-      this.height = this.spriteWidth * 0.25;
+      this.width = this.spriteWidth * 0.35;
+      this.height = this.spriteWidth * 0.35;
       // Spawn anywhere side to side on canvas but above canvas
       this.x = Math.random() * this.game.width;
-      this.y = 0 - this.game.height;
+      this.y = 0 - this.height;
       this.image = spider;
       this.velX = 0;
-      this.velY = 1;
+      this.velY = Math.random() * 0.1 + 0.1;
+      // Randomize how far each spider drops down
+      this.maxDropDown = Math.random() * this.game.height;
     }
     update(deltaTime) {
       super.update(deltaTime);
-      this.y += this.velY;
+      // deltaTime normalize for PCs so makesure the velocity is small
+      this.y += this.velY * deltaTime;
+      // Make them bounce up and down by reversing their direction at threshold
+      if (this.y > this.maxDropDown) this.velY *= -1;
     }
   }
 
@@ -179,7 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       this.angle += 0.04;
     }
 
-    draw() {
+    draw(ctx) {
       // SAVE && RESTORE -> snapshots canvas BEFORE running below code and restores it
       ctx.save();
       // Meaning -> ONLY ghosts will be affected by this global setting on spawn
