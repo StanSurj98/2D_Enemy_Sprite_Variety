@@ -158,6 +158,15 @@ document.addEventListener("DOMContentLoaded", function () {
       // Make them bounce up and down by reversing their direction at threshold
       if (this.y > this.maxDropDown) this.velY *= -1;
     }
+    draw(ctx) {
+      ctx.beginPath(); // New shape draw
+      ctx.moveTo(this.x + (this.width * 0.5), 0); // Where the line starts from
+      // Offset by half the spider dimensions so the line is centered
+      ctx.lineTo(this.x + (this.width * 0.5), this.y + (this.height * 0.5));
+      ctx.stroke();
+      super.draw(ctx);
+
+    }
   }
 
   // ---- Ghosts
