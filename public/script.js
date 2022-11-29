@@ -1,43 +1,81 @@
-document.addEventListener("load", function () {
+document.addEventListener("DOMContentLoaded", function () {
+  /** @type {HTMLCanvasElement} */
   const canvas = document.getElementById("canvas1");
   const ctx = canvas.getContext("2d");
   canvas.width = 500;
   canvas.height = 800;
 
-  // Main Game logic class will handle everything
+  // ---- Main Game Logic
   class Game {
-    constructor() {
+    // !NOTE! Any new instance of this class always runs the constructor
+    constructor(ctx, width, height) {
+      this.ctx = ctx;
+      this.width = width;
+      this.height = height;
       // Holds ALL enemies for instance of a game
       this.enemies = [];
+      this.#addNewEnemy();
+      console.log("enemies: ", this.enemies);
     }
 
-    // These update/draws handles background, all enemies, resources etc.
-    update() {}
+    // These update/draws handles background, enemies, resources etc.
+    update() {
+      this.enemies.forEach((enemy) => {
+        enemy.update();
+      });
+    }
 
-    draw() {}
+    draw() {
+      this.enemies.forEach((enemy) => {
+        enemy.draw();
+      });
+    }
 
-    // This is a private class method in JS - ONLY call-able inside Game class
-    #addNewEnemy() {}
+    // Private class method in JS | ONLY call-able inside Game class | call on Instantiation
+    #addNewEnemy() {
+      // Passing (this) allows Enemy class access to all properties of Game class
+      this.enemies.push(new Enemy(this));
+    }
   }
 
+  // ---- Enemy Factory
   class Enemy {
-    constructor() {}
+    constructor(game) {
+      // Able to use all Game class properties
+      this.game = game;
+      // Temp hardcode
+      this.x = 100;
+      this.y = 100;
+      this.width = 100;
+      this.height = 100;
+    }
 
     // These update/draws handle SPECIFIC enemy instances
-    update() {}
+    update() {
+      this.x--; // Temp moves left by 1px
+    }
 
-    draw() {}
+    draw() {
+      ctx.fillRect(this.x, this.y, this.width, this.height); // Temp square enemy
+    }
   }
 
-  // Init val avoids undefined - gets reassigned each loop
+  // ---- Game Instance
+  const game = new Game(ctx, canvas.width, canvas.height);
+  // Init val avoids undefined - reassigned each loop | For frame equalize /b/ bad & good PCs
   let lastTime = 1;
-  // timeStamp built-in requestAnimationFrame();
+  
+  // ---- Main Animation Loop -----
   function animate(timeStamp) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Game code
+    
+    // -- Frame Timings
+    // timeStamp built-in requestAnimationFrame();
     const deltaTime = timeStamp - lastTime;
     lastTime = timeStamp;
+    // -- Invoke Game Instances
+    game.update();
+    game.draw();
 
     requestAnimationFrame(animate);
   }
