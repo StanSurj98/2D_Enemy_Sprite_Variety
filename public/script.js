@@ -75,34 +75,35 @@ document.addEventListener("DOMContentLoaded", function () {
       // Able to use all Game class properties
       this.game = game;
       this.markedForDeletion = false;
-      // this.frame = 0;
-      // this.frameInterval = 50;
-      // this.frameTimer = 0;
+      // Animation logic all here
+      this.frameX = 0;
+      this.maxFrame = 5; 
+      this.frameInterval = 50;
+      this.frameTimer = 0;
     }
 
     // These update/draws handle SPECIFIC enemy instances
     update(deltaTime) {
       this.x -= this.velX * deltaTime;
 
-      // if (this.frameTimer > this.frameInterval) {
-      //   this.frame >= 5 ? (this.frame = 0) : this.frame++;
-      //   this.frameTimer = 0;
-      // } else {
-      //   this.frameTimer += deltaTime;
-      // }
-
       // When entire enemy width past screen, mark delete
       if (this.x < 0 - this.width) {
         this.markedForDeletion = true;
+      }
+
+      if (this.frameTimer > this.frameInterval) {
+        this.frameX < this.maxFrame ? this.frameX++ : this.frameX = 0;
+        this.frameTimer = 0;
+      } else {
+        this.frameTimer += deltaTime;
       }
     }
 
     draw(ctx) {
       ctx.drawImage(
         this.image,
-        0,
-        // this.frame * this.spriteWidth,
-        0,
+        this.frameX * this.spriteWidth,
+        0, // srcY can stay hardcoded at 0, spriteSheet only has 1 row
         this.spriteWidth,
         this.spriteHeight,
         this.x,
@@ -153,10 +154,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     update(deltaTime) {
       super.update(deltaTime);
+      // !NOTE! Spiders START at (0 - this.height), ONLY DELETE at (0 - this.height * 2)
+      if (this.y < 0 - this.height * 2) {
+        this.markedForDeletion = true;
+      }
       // deltaTime normalize for PCs so makesure the velocity is small
       this.y += this.velY * deltaTime;
       // Make them bounce up and down by reversing their direction at threshold
       if (this.y > this.maxDropDown) this.velY *= -1;
+
     }
     draw(ctx) {
       ctx.beginPath(); // New shape draw
