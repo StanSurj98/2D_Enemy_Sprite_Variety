@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
   worm.src = "./images/enemy_worm.png";
   const ghost = new Image();
   ghost.src = "./images/enemy_ghost.png";
+  const spider = new Image();
+  spider.src = "./images/enemy_spider.png";
 
   // ---- Main Game Logic
   class Game {
@@ -23,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
       this.enemyInterval = 500;
       this.enemyTimer = 0;
       // Multiple enemies
-      this.enemyTypes = ["worm", "ghost"];
+      this.enemyTypes = ["worm", "ghost", "spider"];
     }
 
     // These update/draws handles background, enemies, resources etc.
@@ -56,7 +58,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const randomEnemy = this.enemyTypes[randomIndex];
       // Generate that enemy type
       if (randomEnemy === "worm") this.enemies.push(new Worm(this));
-      if (randomEnemy === "ghost") this.enemies.push(new Ghost(this));
+      else if (randomEnemy === "ghost") this.enemies.push(new Ghost(this));
+      else if (randomEnemy === "spider") this.enemies.push(new Spider(this));
 
       // ---- No longer needed since some fly some don't ----
       // "Layering" effect | here, enemies @ top canvas appears "behind" ones @ bottom
@@ -129,6 +132,27 @@ document.addEventListener("DOMContentLoaded", function () {
       this.velX = Math.random() * 0.1 + 0.1;
     }
     // !NOTE! When Game tries to find update() or draw(), it keeps looking up parent class until it finds it
+  }
+
+  // ---- Spiders
+  class Spider extends Enemy {
+    constructor(game) {
+      super(game);
+      this.spriteWidth = 310;
+      this.spriteHeight = 175;
+      this.width = this.spriteWidth * 0.25;
+      this.height = this.spriteWidth * 0.25;
+      // Spawn anywhere side to side on canvas but above canvas
+      this.x = Math.random() * this.game.width;
+      this.y = 0 - this.game.height;
+      this.image = spider;
+      this.velX = 0;
+      this.velY = 1;
+    }
+    update(deltaTime) {
+      super.update(deltaTime);
+      this.y += this.velY;
+    }
   }
 
   // ---- Ghosts
