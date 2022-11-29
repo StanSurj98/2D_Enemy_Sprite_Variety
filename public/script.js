@@ -224,7 +224,8 @@ document.addEventListener("DOMContentLoaded", function () {
     lastTime = timeStamp;
     // -- Invoke Game Methods
     game.update(deltaTime);
-    
+    game.draw();
+
     requestAnimationFrame(animate);
   }
 
